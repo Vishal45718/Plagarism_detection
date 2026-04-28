@@ -20,16 +20,24 @@ namespace utils {
         return buffer.str();
     }
 
-    std::vector<std::string> get_files_in_directory(const std::string& directory) {
+    std::vector<std::string> get_files_in_directory(const std::string& directory, bool recursive) {
         std::vector<std::string> files;
         if (!fs::exists(directory) || !fs::is_directory(directory)) {
             std::cerr << "Warning: Directory not found or invalid: " << directory << std::endl;
             return files;
         }
 
-        for (const auto& entry : fs::recursive_directory_iterator(directory)) {
-            if (fs::is_regular_file(entry)) {
-                files.push_back(entry.path().string());
+        if (recursive) {
+            for (const auto& entry : fs::recursive_directory_iterator(directory)) {
+                if (fs::is_regular_file(entry)) {
+                    files.push_back(entry.path().string());
+                }
+            }
+        } else {
+            for (const auto& entry : fs::directory_iterator(directory)) {
+                if (fs::is_regular_file(entry)) {
+                    files.push_back(entry.path().string());
+                }
             }
         }
         return files;

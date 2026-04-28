@@ -1,3 +1,6 @@
 obj/
 plagiarism_detector
 *.o
+obj/
+plagiarism_detector
+report.html
