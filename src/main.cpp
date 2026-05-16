@@ -143,8 +143,8 @@ int main(int argc, char** argv) {
         cerr << "Tip: Try adjusting parameters with --mode sensitive or lowering the --threshold.\n";
     }
 
-    reporting::generate_json_report(matches, config, dataset.size(), actual_detailed_comparisons);
-    reporting::generate_html_report(matches, config, dataset.size(), actual_detailed_comparisons);
+    reporting::generate_json_report(matches, config, dataset.size(), total_comparisons);
+    reporting::generate_html_report(matches, config, dataset.size(), total_comparisons);
 
     return 0;
 }
