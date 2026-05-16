@@ -10,7 +10,8 @@ namespace similarity {
 struct MatchResult {
   double jaccard_similarity;
   double cosine_similarity;
-  double containment;
+  double containment_file1_in_file2;
+  double containment_file2_in_file1;
   int common_hashes;
   int total_unique_hashes;
   std::vector<int> matched_lines_file1;
