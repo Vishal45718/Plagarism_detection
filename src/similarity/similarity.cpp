@@ -52,9 +52,15 @@ namespace similarity {
         }
 
         if (set1.empty()) {
-            result.containment = (set2.empty() ? 1.0 : 0.0);
+            result.containment_file1_in_file2 = (set2.empty() ? 1.0 : 0.0);
         } else {
-            result.containment = static_cast<double>(intersection) / set1.size();
+            result.containment_file1_in_file2 = static_cast<double>(intersection) / set1.size();
+        }
+
+        if (set2.empty()) {
+            result.containment_file2_in_file1 = (set1.empty() ? 1.0 : 0.0);
+        } else {
+            result.containment_file2_in_file1 = static_cast<double>(intersection) / set2.size();
         }
 
         result.cosine_similarity = 0.0;
