@@ -26,8 +26,8 @@ namespace reporting {
             std::cout << "      \"file1\": \"" << utils::escape_json(m.file1) << "\",\n";
             std::cout << "      \"file2\": \"" << utils::escape_json(m.file2) << "\",\n";
             std::cout << "      \"jaccard_similarity\": " << std::fixed << std::setprecision(4) << m.metrics.jaccard_similarity << ",\n";
-            std::cout << "      \"cosine_similarity\": " << std::fixed << std::setprecision(4) << m.metrics.cosine_similarity << ",\n";
-            std::cout << "      \"containment\": " << std::fixed << std::setprecision(4) << m.metrics.containment << ",\n";
+            std::cout << "      \"containment_file1_in_file2\": " << std::fixed << std::setprecision(4) << m.metrics.containment_file1_in_file2 << ",\n";
+            std::cout << "      \"containment_file2_in_file1\": " << std::fixed << std::setprecision(4) << m.metrics.containment_file2_in_file1 << ",\n";
             std::cout << "      \"common_hashes\": " << m.metrics.common_hashes << "\n";
             std::cout << "    }" << (i + 1 == matches.size() ? "" : ",") << "\n";
         }
@@ -93,7 +93,7 @@ namespace reporting {
             out << "<td>" << m.file2 << "<br><small>Lines: " << format_lines(m.metrics.matched_lines_file2) << "</small></td>";
             out << "<td>" << std::fixed << std::setprecision(4) << m.metrics.jaccard_similarity << "</td>";
             out << "<td>" << std::fixed << std::setprecision(4) << m.metrics.cosine_similarity << "</td>";
-            out << "<td>" << std::fixed << std::setprecision(4) << m.metrics.containment << "</td>";
+            out << "<td>" << std::fixed << std::setprecision(4) << m.metrics.containment_file1_in_file2 << " / " << m.metrics.containment_file2_in_file1 << "</td>";
             out << "</tr>\n";
         }
         
