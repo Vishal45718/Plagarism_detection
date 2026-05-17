@@ -5,15 +5,30 @@
 
 namespace preprocessing {
 
-    // A simplified list of keywords to avoid masking control flow, etc.
-    const std::unordered_set<std::string> keywords = {
-        "if", "else", "while", "for", "do", "break", "continue", "return",
-        "switch", "case", "default", "try", "catch", "throw", "class", "struct",
-        "int", "float", "double", "char", "void", "bool", "public", "private", "protected",
-        "std", "vector", "string", "cout", "cin", "endl", "include", "define",
-        "def", "class", "import", "from", "as", "pass", "and", "or", "not", "is", "in",
-        "True", "False", "None", "elif", "print"
+    struct LanguageConfig {
+        std::unordered_set<std::string> keywords;
+        
+        LanguageConfig() {
+            // Centralized configuration for keywords across supported languages
+            const char* words[] = {
+                // C++
+                "if", "else", "while", "for", "do", "break", "continue", "return",
+                "switch", "case", "default", "try", "catch", "throw", "class", "struct",
+                "int", "float", "double", "char", "void", "bool", "public", "private", "protected",
+                "std", "vector", "string", "cout", "cin", "endl", "include", "define",
+                // Python
+                "def", "import", "from", "as", "pass", "and", "or", "not", "is", "in",
+                "True", "False", "None", "elif", "print", "except", "finally", "raise"
+            };
+            for (const char* w : words) keywords.insert(w);
+        }
+        
+        bool is_keyword(const std::string& word) const {
+            return keywords.find(word) != keywords.end();
+        }
     };
+    
+    const LanguageConfig LANG_CONFIG;
 
     NormalizedDocument preprocess(const std::string& raw_text) {
         NormalizedDocument doc;
@@ -29,6 +44,38 @@ namespace preprocessing {
             if (raw_text[i] == '\n') {
                 current_line++;
                 i++;
+                continue;
+            }
+
+            // String literals
+            if (raw_text[i] == '"') {
+                i++;
+                while (i < n && raw_text[i] != '"') {
+                    if (raw_text[i] == '\\' && i + 1 < n) {
+                        if (raw_text[i+1] == '\n') current_line++;
+                        i += 2;
+                    } else {
+                        if (raw_text[i] == '\n') current_line++;
+                        i++;
+                    }
+                }
+                if (i < n) i++; // skip closing quote
+                continue;
+            }
+
+            // Char literals
+            if (raw_text[i] == '\'') {
+                i++;
+                while (i < n && raw_text[i] != '\'') {
+                    if (raw_text[i] == '\\' && i + 1 < n) {
+                        if (raw_text[i+1] == '\n') current_line++;
+                        i += 2;
+                    } else {
+                        if (raw_text[i] == '\n') current_line++;
+                        i++;
+                    }
+                }
+                if (i < n) i++;
                 continue;
             }
 
@@ -77,7 +124,7 @@ namespace preprocessing {
                 }
                 
                 std::string token_to_push = word;
-                if (keywords.find(word) == keywords.end()) {
+                if (!LANG_CONFIG.is_keyword(word)) {
                     token_to_push = "V"; // Generic variable token
                 } else {
                     // Convert keyword to lowercase for normalization
