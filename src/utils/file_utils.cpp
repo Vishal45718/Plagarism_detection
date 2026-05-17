@@ -6,6 +6,9 @@
 #include <iomanip>
 
 namespace fs = std::filesystem;
+#include <unordered_set>
+#include <algorithm>
+#include <cctype>
 
 namespace utils {
 
@@ -20,6 +23,16 @@ namespace utils {
         return buffer.str();
     }
 
+    const std::unordered_set<std::string> SUPPORTED_EXTENSIONS = {
+        ".cpp", ".cc", ".cxx", ".h", ".hpp", ".py"
+    };
+
+    bool is_supported_file(const fs::path& p) {
+        std::string ext = p.extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
+        return SUPPORTED_EXTENSIONS.find(ext) != SUPPORTED_EXTENSIONS.end();
+    }
+
     std::vector<std::string> get_files_in_directory(const std::string& directory, bool recursive) {
         std::vector<std::string> files;
         if (!fs::exists(directory) || !fs::is_directory(directory)) {
@@ -29,13 +42,13 @@ namespace utils {
 
         if (recursive) {
             for (const auto& entry : fs::recursive_directory_iterator(directory)) {
-                if (fs::is_regular_file(entry)) {
+                if (fs::is_regular_file(entry) && is_supported_file(entry.path())) {
                     files.push_back(entry.path().string());
                 }
             }
         } else {
             for (const auto& entry : fs::directory_iterator(directory)) {
-                if (fs::is_regular_file(entry)) {
+                if (fs::is_regular_file(entry) && is_supported_file(entry.path())) {
                     files.push_back(entry.path().string());
                 }
             }
