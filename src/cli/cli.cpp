@@ -18,6 +18,8 @@ namespace cli {
                   << "  --metric <metric>       Similarity metric: jaccard, cosine, both\n"
                   << "  --recursive             Scan subdirectories recursively\n"
                   << "  --output <file.html>    Generate HTML report\n"
+                  << "  --bands <int>           LSH bands (default: 20)\n"
+                  << "  --rows <int>            LSH rows (default: 5)\n"
                   << "\nExamples:\n"
                   << "  plagiarism_detector --dir ./code --mode strict --metric both --output report.html\n"
                   << "  plagiarism_detector --dir ./src --recursive --top 10 --verbose\n";
@@ -44,6 +46,10 @@ namespace cli {
                 config.recursive = true;
             } else if (arg == "--output" && i + 1 < argc) {
                 config.output_html = argv[++i];
+            } else if (arg == "--bands" && i + 1 < argc) {
+                config.lsh_bands = std::stoi(argv[++i]);
+            } else if (arg == "--rows" && i + 1 < argc) {
+                config.lsh_rows = std::stoi(argv[++i]);
             } else if (arg == "--mode" && i + 1 < argc) {
                 std::string mode_str = argv[++i];
                 if (mode_str == "sensitive") config.mode = Mode::SENSITIVE;
@@ -86,12 +92,28 @@ namespace cli {
                 config.kgram = 10;
                 config.window_thresh = 15;
                 config.threshold = 0.05;
+                config.lsh_bands = 40;
+                config.lsh_rows = 3;
             } else if (config.mode == Mode::STRICT) {
                 config.kgram = 20;
                 config.window_thresh = 30;
                 config.threshold = 0.3;
+                config.lsh_bands = 15;
+                config.lsh_rows = 6;
             }
             // balanced keeps defaults or overridden values from args if we want, but simple override here.
+        }
+
+        if (config.lsh_bands <= 0 || config.lsh_rows <= 0) {
+            config.valid = false;
+            config.error_msg = "LSH bands and rows must be positive integers.";
+        }
+
+        if (config.valid && config.error_msg.empty()) {
+            if (config.lsh_bands < 10 || config.lsh_rows > 10) {
+                std::cerr << "[WARNING] Unsafe LSH configuration. A small number of bands or large number of rows increases the chance of false negatives.\n";
+                std::cerr << "[WARNING] Consider increasing bands or decreasing rows. (e.g., bands=20, rows=5)\n";
+            }
         }
 
         return config;

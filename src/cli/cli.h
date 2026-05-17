@@ -29,6 +29,8 @@ namespace cli {
         Metric metric = Metric::JACCARD;
         bool recursive = false;
         std::string output_html = "";
+        int lsh_bands = 20;
+        int lsh_rows = 5;
         bool valid = true;
         std::string error_msg = "";
     };
