@@ -102,16 +102,22 @@ namespace similarity {
 
         auto tf_idf = [&](int count, double idf) { return count * idf; }; 
 
+        auto get_idf = [&](uint32_t hash) {
+            auto it = idf_map.find(hash);
+            if (it != idf_map.end()) return it->second;
+            return 0.0; // Fallback behavior for missing terms
+        };
+
         for (const auto& pair : tf1) {
-            double w = tf_idf(pair.second, idf_map.at(pair.first));
+            double w = tf_idf(pair.second, get_idf(pair.first));
             norm1 += w * w;
         }
         for (const auto& pair : tf2) {
-            double w = tf_idf(pair.second, idf_map.at(pair.first));
+            double w = tf_idf(pair.second, get_idf(pair.first));
             norm2 += w * w;
             
             if (tf1.count(pair.first)) {
-                double w1 = tf_idf(tf1[pair.first], idf_map.at(pair.first));
+                double w1 = tf_idf(tf1.at(pair.first), get_idf(pair.first));
                 dot_product += w1 * w;
             }
         }
