@@ -26,6 +26,7 @@ namespace reporting {
             std::cout << "      \"file1\": \"" << utils::escape_json(m.file1) << "\",\n";
             std::cout << "      \"file2\": \"" << utils::escape_json(m.file2) << "\",\n";
             std::cout << "      \"jaccard_similarity\": " << std::fixed << std::setprecision(4) << m.metrics.jaccard_similarity << ",\n";
+            std::cout << "      \"cosine_similarity\": " << std::fixed << std::setprecision(4) << m.metrics.cosine_similarity << ",\n";
             std::cout << "      \"containment_file1_in_file2\": " << std::fixed << std::setprecision(4) << m.metrics.containment_file1_in_file2 << ",\n";
             std::cout << "      \"containment_file2_in_file1\": " << std::fixed << std::setprecision(4) << m.metrics.containment_file2_in_file1 << ",\n";
             std::cout << "      \"common_hashes\": " << m.metrics.common_hashes << "\n";
