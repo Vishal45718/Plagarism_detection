@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
     vector<Document> dataset;
     dataset.reserve(files.size());
 
-    const int minhash_size = 100; // 20 bands * 5 rows
+    const int minhash_size = config.lsh_bands * config.lsh_rows;
 
     for (const auto& f : files) {
         string raw_content = utils::read_file(f);
@@ -92,7 +92,8 @@ int main(int argc, char** argv) {
             total_comparisons++;
             
             // LSH to avoid full O(n^2) detailed comparisons
-            if (!lsh_candidate(dataset[i].minhash_sig, dataset[j].minhash_sig, 20, 5)) {
+            // Tradeoff: LSH can introduce false negatives depending on bands and rows configuration.
+            if (!lsh_candidate(dataset[i].minhash_sig, dataset[j].minhash_sig, config.lsh_bands, config.lsh_rows)) {
                 // Even if not a candidate, we might want to show it in verbose mode if asked,
                 // but the prompt says LSH is to AVOID O(n^2) comparisons. So we skip.
                 continue;
