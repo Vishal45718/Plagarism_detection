@@ -13,6 +13,9 @@ namespace fingerprinting {
         if (text.length() < static_cast<std::size_t>(k)) return hashes;
 
         const uint32_t base = 31;
+        // Note: We use uint32_t for hashing. Integer overflow (rollover) is intentional 
+        // and safely defined by the C++ standard for unsigned types. This provides 
+        // a modulo 2^32 behavior automatically without performance penalties.
         uint32_t current_hash = 0;
         uint32_t highest_power = 1;
 
