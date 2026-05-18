@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VeriScan Pro — Code Plagiarism Detection</title>
+  <meta name="description" content="Institutional-grade source-code plagiarism detection. Upload C, C++, Python, and Java files and get similarity scores in seconds." />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <!-- Tailwind config (preserve original design tokens) -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "tertiary-fixed": "#d3e4fe",
+            "on-error-container": "#93000a",
+            "tertiary": "#46566c",
+            "on-secondary-fixed-variant": "#3f465c",
+            "tertiary-fixed-dim": "#b7c8e1",
+            "on-primary-container": "#eeefff",
+            "primary-fixed": "#dbe1ff",
+            "surface-container-high": "#e6e8ea",
+            "tertiary-container": "#5e6e85",
+            "surface-dim": "#d8dadc",
+            "on-tertiary": "#ffffff",
+            "error": "#ba1a1a",
+            "surface-tint": "#0053db",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f2f4f6",
+            "on-background": "#191c1e",
+            "on-primary-fixed-variant": "#003ea8",
+            "on-secondary-fixed": "#131b2e",
+            "surface-variant": "#e0e3e5",
+            "surface-container": "#eceef0",
+            "outline-variant": "#c3c6d7",
+            "surface-container-highest": "#e0e3e5",
+            "inverse-primary": "#b4c5ff",
+            "secondary": "#565e74",
+            "inverse-on-surface": "#eff1f3",
+            "on-secondary": "#ffffff",
+            "on-surface": "#191c1e",
+            "on-tertiary-fixed": "#0b1c30",
+            "error-container": "#ffdad6",
+            "secondary-container": "#dae2fd",
+            "surface": "#f7f9fb",
+            "inverse-surface": "#2d3133",
+            "background": "#f7f9fb",
+            "surface-bright": "#f7f9fb",
+            "primary-fixed-dim": "#b4c5ff",
+            "primary-container": "#2563eb",
+            "secondary-fixed": "#dae2fd",
+            "on-tertiary-fixed-variant": "#38485d",
+            "secondary-fixed-dim": "#bec6e0",
+            "on-tertiary-container": "#e9f0ff",
+            "on-surface-variant": "#434655",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "outline": "#737686",
+            "primary": "#004ac6",
+            "on-secondary-container": "#5c647a",
+            "on-primary-fixed": "#00174b"
+          },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          spacing: {
+            xl: "64px", "margin-mobile": "16px", sm: "12px",
+            gutter: "24px", "container-max": "1280px",
+            base: "8px", xs: "4px", md: "24px", lg: "40px"
+          },
+          fontFamily: { mono: ["JetBrains Mono", "monospace"] },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- ═══════════════════════════════════════ NAVBAR ══════════════════════════════════════ -->
+  <nav id="navbar" class="sticky top-0 w-full z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 md:px-10 flex justify-between items-center h-[70px]">
+
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2 no-underline">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-md">
+          <span class="material-symbols-outlined text-white text-[18px]">shield_with_heart</span>
+        </div>
+        <span class="text-xl font-extrabold tracking-tight text-blue-700 dark:text-indigo-300">VeriScan<span class="text-indigo-500 dark:text-indigo-400"> Pro</span></span>
+      </a>
+
+      <!-- Nav links (desktop) -->
+      <div class="hidden md:flex gap-8 items-center">
+        <a href="#upload-section" class="text-sm font-medium text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors">Upload</a>
+        <a href="#results-section" class="text-sm font-medium text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors">Results</a>
+        <a href="#compare-section" class="text-sm font-medium text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors">Compare</a>
+        <a href="#" class="text-sm font-medium text-slate-500 dark:text-slate-300 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors">Docs</a>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Dark toggle -->
+        <button id="dark-toggle" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-colors" title="Toggle dark mode">
+          <span id="dark-icon" class="material-symbols-outlined text-[20px] text-slate-500 dark:text-slate-300">dark_mode</span>
+        </button>
+        <button class="hidden md:block text-sm font-medium px-4 py-1.5 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors">Log In</button>
+        <button class="text-sm font-semibold px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg transition-all active:scale-95">Get Started</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════ ERROR BANNER ════════════════════════════════════ -->
+  <div id="error-banner" class="hidden-section fixed top-[74px] left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4">
+    <div class="flex items-center gap-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700/50 text-red-700 dark:text-red-300 rounded-xl px-4 py-3 shadow-lg fade-in text-sm">
+      <span class="material-symbols-outlined text-[18px] shrink-0">error</span>
+      <span id="error-msg" class="flex-1"></span>
+      <button id="error-close" class="material-symbols-outlined text-[18px] opacity-60 hover:opacity-100 cursor-pointer">close</button>
+    </div>
+  </div>
+
+  <main class="flex-grow">
+
+    <!-- ════════════════════════════════ UPLOAD SECTION ═══════════════════════════════════ -->
+    <section id="upload-section" class="min-h-screen flex flex-col items-center justify-center py-16 px-4">
+
+      <!-- Hero headline -->
+      <div class="text-center mb-10 fade-in">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700/40 rounded-full text-xs font-semibold text-indigo-600 dark:text-indigo-300 mb-5">
+          <span class="material-symbols-outlined text-[14px]">verified</span>
+          Academic · Industrial · Open Source
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-800 dark:text-white mb-4 leading-tight">
+          Detect Code <span class="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">Plagiarism</span><br class="hidden md:block" /> in Seconds
+        </h1>
+        <p class="text-base md:text-lg text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
+          Upload source files and get Jaccard, Cosine & Containment similarity scores powered by a high-performance C++ fingerprinting engine.
+        </p>
+      </div>
+
+      <!-- Upload card -->
+      <div class="w-full max-w-2xl bg-white dark:bg-[#161b27] border border-slate-200 dark:border-white/8 rounded-2xl shadow-xl p-8 md:p-10 flex flex-col gap-6 fade-in">
+
+        <!-- Drop zone -->
+        <div id="drop-zone" class="relative flex flex-col items-center justify-center p-10 text-center">
+          <div class="upload-icon-wrap w-16 h-16 rounded-2xl bg-blue-50 dark:bg-indigo-900/40 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-[32px] text-blue-600 dark:text-indigo-300">cloud_upload</span>
+          </div>
+          <p class="text-lg font-semibold text-slate-700 dark:text-white">Drag & drop your source files here</p>
+          <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">
+            or <span class="text-blue-600 dark:text-indigo-400 font-semibold cursor-pointer hover:underline">click to browse</span>
+          </p>
+
+          <!-- Supported badges -->
+          <div class="flex flex-wrap justify-center gap-2 mt-6">
+            <span class="px-2.5 py-1 bg-slate-100 dark:bg-white/5 text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 rounded-md border border-slate-200 dark:border-white/10">.cpp</span>
+            <span class="px-2.5 py-1 bg-slate-100 dark:bg-white/5 text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 rounded-md border border-slate-200 dark:border-white/10">.c</span>
+            <span class="px-2.5 py-1 bg-slate-100 dark:bg-white/5 text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 rounded-md border border-slate-200 dark:border-white/10">.h</span>
+            <span class="px-2.5 py-1 bg-slate-100 dark:bg-white/5 text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 rounded-md border border-slate-200 dark:border-white/10">.py</span>
+            <span class="px-2.5 py-1 bg-slate-100 dark:bg-white/5 text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 rounded-md border border-slate-200 dark:border-white/10">.java</span>
+          </div>
+
+          <input id="file-input" type="file" multiple accept=".cpp,.c,.h,.py,.java" class="absolute inset-0 opacity-0 cursor-pointer" aria-label="Upload source files" />
+        </div>
+
+        <!-- File list -->
+        <div id="file-list" class="flex flex-wrap gap-2 hidden"></div>
+
+        <!-- Progress bar -->
+        <div id="progress-bar-wrap">
+          <div class="flex justify-between items-center text-sm">
+            <span id="progress-label" class="font-medium text-indigo-600 dark:text-indigo-300 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] animate-spin" style="animation: spin 1s linear infinite">progress_activity</span>
+              Uploading...
+            </span>
+            <span id="progress-pct" class="font-bold text-slate-600 dark:text-slate-300">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progress-fill" class="progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Security note -->
+        <div class="flex items-start gap-3 px-4 py-3 bg-blue-50 dark:bg-indigo-900/20 border border-blue-100 dark:border-indigo-700/30 rounded-xl">
+          <span class="material-symbols-outlined text-blue-500 text-[20px] mt-0.5">verified_user</span>
+          <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            Files are processed in an isolated sandbox. We <strong>never</strong> store or share your source code without explicit consent.
+          </p>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 pt-1">
+          <button id="cancel-btn" class="flex-1 py-3 px-6 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+            Clear
+          </button>
+          <button id="analyze-btn" class="flex-1 py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">analytics</span>
+            Upload & Analyze
+          </button>
+        </div>
+      </div>
+
+      <!-- Feature strip -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-12 w-full max-w-2xl fade-in">
+        <div class="flex items-center gap-3 p-4 bg-white dark:bg-[#161b27] border border-slate-100 dark:border-white/8 rounded-xl shadow-sm">
+          <div class="w-9 h-9 bg-blue-50 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600 dark:text-indigo-300 text-[18px]">fingerprint</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-slate-700 dark:text-white">Winnowing</div>
+            <div class="text-xs text-slate-400">k-gram fingerprinting</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-4 bg-white dark:bg-[#161b27] border border-slate-100 dark:border-white/8 rounded-xl shadow-sm">
+          <div class="w-9 h-9 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-300 text-[18px]">speed</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-slate-700 dark:text-white">C++ Engine</div>
+            <div class="text-xs text-slate-400">Sub-second analysis</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-4 bg-white dark:bg-[#161b27] border border-slate-100 dark:border-white/8 rounded-xl shadow-sm">
+          <div class="w-9 h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[18px]">lock</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-slate-700 dark:text-white">Private</div>
+            <div class="text-xs text-slate-400">Zero data retention</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════ RESULTS SECTION ══════════════════════════════════ -->
+    <section id="results-section" class="hidden-section min-h-screen py-16 px-4">
+      <div class="max-w-7xl mx-auto">
+
+        <!-- Results header -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-8 fade-in">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-white">Analysis Results</h2>
+            <p class="text-sm text-slate-400 mt-1">Similarity report generated — click any pair to compare code.</p>
+          </div>
+          <button id="new-scan-btn" class="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg transition-all active:scale-95">
+            <span class="material-symbols-outlined text-[16px]">add</span> New Scan
+          </button>
+        </div>
+
+        <!-- Summary stats -->
+        <div id="summary-strip" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8 fade-in"></div>
+
+        <!-- Risk filter tabs -->
+        <div class="flex flex-wrap gap-2 mb-6">
+          <button class="filter-tab active" data-filter="ALL">All Pairs</button>
+          <button class="filter-tab" data-filter="HIGH">
+            <span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-1"></span>High Risk
+          </button>
+          <button class="filter-tab" data-filter="MEDIUM">
+            <span class="inline-block w-2 h-2 rounded-full bg-orange-500 mr-1"></span>Medium
+          </button>
+          <button class="filter-tab" data-filter="LOW">
+            <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-1"></span>Low
+          </button>
+          <button class="filter-tab" data-filter="SAFE">
+            <span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-1"></span>Safe
+          </button>
+        </div>
+
+        <!-- Result cards grid -->
+        <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+        <!-- ══════════════════════ SIDE-BY-SIDE COMPARE PLACEHOLDER ════════════════════ -->
+        <div id="compare-section" class="mt-14 p-8 bg-white dark:bg-[#161b27] border border-dashed border-indigo-300 dark:border-indigo-700/50 rounded-2xl fade-in">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-indigo-500 text-[22px]">compare</span>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-800 dark:text-white">Side-by-Side Code Comparison</h3>
+              <p class="text-xs text-slate-400">Highlighted plagiarized lines rendered here once backend is connected.</p>
+            </div>
+            <span class="ml-auto inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-full text-xs font-bold border border-amber-200 dark:border-amber-700/40">
+              <span class="material-symbols-outlined text-[12px]">construction</span> Coming Soon
+            </span>
+          </div>
+          <div class="flex items-center gap-3 mt-2">
+            <div class="flex-1 bg-slate-50 dark:bg-white/5 rounded-xl p-4 text-xs font-mono text-slate-400 dark:text-slate-500 leading-relaxed min-h-[120px] flex items-center justify-center border border-slate-100 dark:border-white/5">
+              <span class="opacity-40">← File A token-diff will render here</span>
+            </div>
+            <span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-[28px]">arrow_forward</span>
+            <div class="flex-1 bg-slate-50 dark:bg-white/5 rounded-xl p-4 text-xs font-mono text-slate-400 dark:text-slate-500 leading-relaxed min-h-[120px] flex items-center justify-center border border-slate-100 dark:border-white/5">
+              <span class="opacity-40">File B token-diff will render here →</span>
+            </div>
+          </div>
+          <ul class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-indigo-400">check</span> Line-by-line token matching</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-indigo-400">check</span> Renamed variable detection</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-indigo-400">check</span> Reordered block detection</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-indigo-400">check</span> Syntax-aware diffing</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════ FOOTER ══════════════════════════════════════ -->
+  <footer class="w-full py-16 bg-slate-50 dark:bg-[#0f1117] border-t border-slate-200 dark:border-white/5">
+    <div class="max-w-7xl mx-auto px-4 md:px-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div class="lg:col-span-1">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
+            <span class="material-symbols-outlined text-white text-[15px]">shield_with_heart</span>
+          </div>
+          <span class="text-base font-extrabold text-blue-700 dark:text-indigo-300">VeriScan<span class="text-indigo-500"> Pro</span></span>
+        </div>
+        <p class="text-sm text-slate-400 dark:text-slate-500 leading-relaxed">© 2024 VeriScan Pro.<br/>Institutional-grade integrity for the modern era.</p>
+        <div class="flex gap-3 mt-4">
+          <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-indigo-900/30 transition-colors">
+            <span class="material-symbols-outlined text-slate-400 text-[16px]">public</span>
+          </a>
+          <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center hover:bg-blue-100 dark:hover:bg-indigo-900/30 transition-colors">
+            <span class="material-symbols-outlined text-slate-400 text-[16px]">mail</span>
+          </a>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Product</h4>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">API Documentation</a>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">Security Compliance</a>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">Changelog</a>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Legal</h4>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">Privacy Policy</a>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">Terms of Service</a>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">Cookie Policy</a>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Support</h4>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">Support Center</a>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">GitHub Repository</a>
+        <a href="#" class="text-sm text-slate-400 hover:text-blue-600 dark:hover:text-indigo-300 transition-colors hover:underline">Report a Bug</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════ COMPARE MODAL ═══════════════════════════════════════════ -->
+  <div id="compare-modal" role="dialog" aria-modal="true" aria-label="Code comparison modal">
+    <div class="modal-box overflow-hidden">
+      <div id="modal-content"></div>
+      <div class="flex justify-end p-4 border-t border-slate-100 dark:border-white/8">
+        <button id="modal-close" class="text-sm font-semibold px-5 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl transition-colors">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- spin keyframe inline for progress icon -->
+  <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+
+  <!-- App entry point -->
+  <script type="module" src="./js/app.js"></script>
+
+</body>
+</html>
