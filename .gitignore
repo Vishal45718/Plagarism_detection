@@ -1,7 +1,29 @@
+# Build outputs
 obj/
-plagiarism_detector
+build/
+dist/
 *.o
-obj/
+*.obj
+*.out
+*.exe
+*.a
+*.so
+*.dll
+*.dylib
 plagiarism_detector
+
+# Generated reports and temporary files
 report.html
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Frontend dependencies
+node_modules/
+
+# Editor and OS files
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -81,7 +81,7 @@ make
 make clean && make
 ```
 
-This generates the `plagiarism_detector` executable in the project root.
+This generates the `plagiarism_detector` executable in the project root and object files under `obj/`. These are local build artifacts and are intentionally ignored by git.
 
 ### Running the CLI Tool
 
