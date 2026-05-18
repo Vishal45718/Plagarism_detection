@@ -174,6 +174,16 @@ Misc:
 ./plagiarism_detector --dir ./code --metric both --bands 25 --rows 4 --recursive
 ```
 
+Invalid numeric CLI inputs fail gracefully with a clear error instead of crashing:
+
+```bash
+./plagiarism_detector --dir ./src --threshold nope
+./plagiarism_detector --dir ./src --threshold 1.5
+./plagiarism_detector --dir ./src --kgram 0
+./plagiarism_detector --dir ./src --kgram 15 --window 10
+./plagiarism_detector --dir ./src --top -3
+```
+
 ### Preset Modes
 
 | Mode | Sensitivity | Threshold | K-gram | Window | Use Case |

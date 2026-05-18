@@ -2,8 +2,39 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cerrno>
+#include <cmath>
+#include <cstdlib>
+#include <limits>
 
 namespace cli {
+    namespace {
+        bool parse_double(const std::string& value, double& parsed) {
+            char* end = nullptr;
+            errno = 0;
+            parsed = std::strtod(value.c_str(), &end);
+            return errno != ERANGE && end != value.c_str() && *end == '\0' && std::isfinite(parsed);
+        }
+
+        bool parse_int(const std::string& value, int& parsed) {
+            char* end = nullptr;
+            errno = 0;
+            long result = std::strtol(value.c_str(), &end, 10);
+            if (errno == ERANGE || end == value.c_str() || *end != '\0') {
+                return false;
+            }
+            if (result < std::numeric_limits<int>::min() || result > std::numeric_limits<int>::max()) {
+                return false;
+            }
+            parsed = static_cast<int>(result);
+            return true;
+        }
+
+        void set_error(Config& config, const std::string& message) {
+            config.valid = false;
+            config.error_msg = message;
+        }
+    }
 
     void print_help() {
         std::cout << "Usage: plagiarism_detector [options]\n"
@@ -33,23 +64,47 @@ namespace cli {
             if (arg == "--dir" && i + 1 < argc) {
                 config.target_dir = argv[++i];
             } else if (arg == "--threshold" && i + 1 < argc) {
-                config.threshold = std::stod(argv[++i]);
+                std::string value = argv[++i];
+                if (!parse_double(value, config.threshold)) {
+                    set_error(config, "Invalid threshold value: expected a number between 0 and 1");
+                    return config;
+                }
             } else if (arg == "--kgram" && i + 1 < argc) {
-                config.kgram = std::stoi(argv[++i]);
+                std::string value = argv[++i];
+                if (!parse_int(value, config.kgram)) {
+                    set_error(config, "Invalid kgram value: expected a positive integer");
+                    return config;
+                }
             } else if (arg == "--window" && i + 1 < argc) {
-                config.window_thresh = std::stoi(argv[++i]);
+                std::string value = argv[++i];
+                if (!parse_int(value, config.window_thresh)) {
+                    set_error(config, "Invalid window value: expected an integer greater than kgram");
+                    return config;
+                }
             } else if (arg == "--verbose") {
                 config.verbose = true;
             } else if (arg == "--top" && i + 1 < argc) {
-                config.top_n = std::stoi(argv[++i]);
+                std::string value = argv[++i];
+                if (!parse_int(value, config.top_n)) {
+                    set_error(config, "Invalid top value: expected a positive integer");
+                    return config;
+                }
             } else if (arg == "--recursive") {
                 config.recursive = true;
             } else if (arg == "--output" && i + 1 < argc) {
                 config.output_html = argv[++i];
             } else if (arg == "--bands" && i + 1 < argc) {
-                config.lsh_bands = std::stoi(argv[++i]);
+                std::string value = argv[++i];
+                if (!parse_int(value, config.lsh_bands)) {
+                    set_error(config, "Invalid bands value: expected a positive integer");
+                    return config;
+                }
             } else if (arg == "--rows" && i + 1 < argc) {
-                config.lsh_rows = std::stoi(argv[++i]);
+                std::string value = argv[++i];
+                if (!parse_int(value, config.lsh_rows)) {
+                    set_error(config, "Invalid rows value: expected a positive integer");
+                    return config;
+                }
             } else if (arg == "--mode" && i + 1 < argc) {
                 std::string mode_str = argv[++i];
                 if (mode_str == "sensitive") config.mode = Mode::SENSITIVE;
@@ -104,9 +159,16 @@ namespace cli {
             // balanced keeps defaults or overridden values from args if we want, but simple override here.
         }
 
-        if (config.lsh_bands <= 0 || config.lsh_rows <= 0) {
-            config.valid = false;
-            config.error_msg = "LSH bands and rows must be positive integers.";
+        if (config.threshold < 0.0 || config.threshold > 1.0) {
+            set_error(config, "Invalid threshold value: expected a number between 0 and 1");
+        } else if (config.kgram <= 0) {
+            set_error(config, "Invalid kgram value: expected a positive integer");
+        } else if (config.window_thresh <= config.kgram) {
+            set_error(config, "Invalid window value: expected an integer greater than kgram");
+        } else if (config.top_n == 0 || config.top_n < -1) {
+            set_error(config, "Invalid top value: expected a positive integer");
+        } else if (config.lsh_bands <= 0 || config.lsh_rows <= 0) {
+            set_error(config, "LSH bands and rows must be positive integers.");
         }
 
         if (config.valid && config.error_msg.empty()) {
