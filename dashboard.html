@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VeriScan Pro | Analysis Results</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#32343d",
+                        "primary": "#b4c5ff",
+                        "on-tertiary-fixed": "#360f00",
+                        "inverse-primary": "#0053db",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "surface-variant": "#32343d",
+                        "surface": "#11131b",
+                        "inverse-on-surface": "#2e3039",
+                        "background": "#11131b",
+                        "secondary-fixed": "#e2e1eb",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary": "#ffb596",
+                        "secondary": "#c6c6cf",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#b4b4bd",
+                        "on-secondary": "#2f3037",
+                        "secondary-container": "#45464e",
+                        "on-tertiary": "#581e00",
+                        "surface-dim": "#11131b",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "outline": "#8d90a0",
+                        "on-primary-container": "#eeefff",
+                        "surface-container-low": "#191b23",
+                        "surface-container-lowest": "#0c0e16",
+                        "surface-tint": "#b4c5ff",
+                        "surface-container": "#1d1f27",
+                        "surface-bright": "#373942",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-container-high": "#282a32",
+                        "on-secondary-fixed-variant": "#45464e",
+                        "outline-variant": "#434655",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-surface": "#e1e2ed",
+                        "on-tertiary-container": "#ffede6",
+                        "secondary-fixed-dim": "#c6c6cf",
+                        "on-background": "#e1e2ed",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "primary-container": "#2563eb",
+                        "on-surface-variant": "#c3c6d7",
+                        "inverse-surface": "#e1e2ed",
+                        "tertiary-container": "#bc4800",
+                        "on-primary": "#002a78",
+                        "on-secondary-fixed": "#1a1b22"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "sidebar-width": "240px",
+                        "container-padding": "24px",
+                        "grid-gutter": "16px",
+                        "element-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Geist"],
+                        "body-md": ["Geist"],
+                        "metric-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "headline-sm": ["Geist"],
+                        "code-md": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "metric-sm": ["12px", { "lineHeight": "1", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "code-md": ["13px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .code-line-num {
+            color: #52525b;
+            padding-right: 16px;
+            user-select: none;
+            min-width: 3rem;
+            text-align: right;
+            border-right: 1px solid theme('colors.outline-variant');
+            margin-right: 16px;
+            padding-left: 8px;
+        }
+
+        .diff-highlight {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .diff-highlight .code-line-num {
+            border-right: 2px solid #ef4444;
+            margin-right: 15px;
+            /* adjust to maintain layout with 2px border */
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #11131b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #32343d;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #434655;
+        }
+
+        .pulse-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .5;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-white">
+    <!-- TopNavBar -->
+    <header
+        class="docked full-width top-0 sticky z-50 border-b border-outline-variant bg-surface flex justify-between items-center w-full px-container-padding h-16">
+        <div class="flex items-center gap-8">
+            <span class="font-headline-md text-headline-md font-bold text-on-surface">VeriScan Pro</span>
+            <nav class="hidden md:flex items-center gap-6">
+                <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors"
+                    href="#">Upload</a>
+                <a class="font-label-caps text-label-caps text-primary font-bold border-b-2 border-primary pb-1"
+                    href="#">Results</a>
+                <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors"
+                    href="#">Compare</a>
+                <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors"
+                    href="#">Docs</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <button
+                class="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-highest transition-all duration-200"
+                data-icon="dark_mode">dark_mode</button>
+            <button
+                class="px-4 py-2 border border-outline-variant text-on-surface font-label-caps text-label-caps hover:bg-surface-container-highest transition-all duration-200">Log
+                In</button>
+            <button
+                class="px-4 py-2 bg-primary-container text-white font-label-caps text-label-caps active:scale-95 transition-transform">Get
+                Started</button>
+        </div>
+    </header>
+    <main class="p-container-padding space-y-grid-gutter">
+        <!-- Dashboard Header -->
+        <div class="flex justify-between items-end">
+            <div class="space-y-1">
+                <h1 class="font-headline-lg text-headline-lg">Analysis Results</h1>
+                <p class="text-on-surface-variant font-body-md">Similarity report generated for <span
+                        class="text-primary font-metric-sm">Batch_ID: #8829-X</span>. Total processing time: 412ms.</p>
+            </div>
+            <button
+                class="bg-primary-container text-white px-6 py-3 rounded flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+                <span class="material-symbols-outlined" data-icon="add">add</span>
+                <span class="font-label-caps text-label-caps">New Scan</span>
+            </button>
+        </div>
+        <!-- 6-Column KPI Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-grid-gutter">
+            <!-- High Risk -->
+            <div
+                class="bg-surface-container border border-outline-variant p-4 rounded-sm flex flex-col justify-between">
+                <span class="text-on-surface-variant font-label-caps text-[10px] uppercase tracking-widest">High
+                    Risk</span>
+                <div class="flex items-end justify-between mt-2">
+                    <span class="text-headline-md font-metric-sm text-[#ffb4ab]">12</span>
+                    <span class="text-[10px] bg-[#93000a] text-white px-1.5 py-0.5 rounded-sm">+2</span>
+                </div>
+            </div>
+            <!-- Medium Risk -->
+            <div
+                class="bg-surface-container border border-outline-variant p-4 rounded-sm flex flex-col justify-between">
+                <span
+                    class="text-on-surface-variant font-label-caps text-[10px] uppercase tracking-widest">Medium</span>
+                <div class="flex items-end justify-between mt-2">
+                    <span class="text-headline-md font-metric-sm text-[#ffb596]">28</span>
+                    <span class="text-[10px] bg-tertiary-container text-white px-1.5 py-0.5 rounded-sm">-4</span>
+                </div>
+            </div>
+            <!-- Low Risk -->
+            <div
+                class="bg-surface-container border border-outline-variant p-4 rounded-sm flex flex-col justify-between">
+                <span class="text-on-surface-variant font-label-caps text-[10px] uppercase tracking-widest">Low
+                    Risk</span>
+                <div class="flex items-end justify-between mt-2">
+                    <span class="text-headline-md font-metric-sm text-yellow-300">45</span>
+                    <span class="text-[10px] bg-yellow-900 text-white px-1.5 py-0.5 rounded-sm">0</span>
+                </div>
+            </div>
+            <!-- Safe -->
+            <div
+                class="bg-surface-container border border-outline-variant p-4 rounded-sm flex flex-col justify-between">
+                <span class="text-on-surface-variant font-label-caps text-[10px] uppercase tracking-widest">Safe</span>
+                <div class="flex items-end justify-between mt-2">
+                    <span class="text-headline-md font-metric-sm text-emerald-400">1,204</span>
+                    <span class="text-[10px] bg-emerald-900 text-white px-1.5 py-0.5 rounded-sm">+18</span>
+                </div>
+            </div>
+            <!-- Avg Jaccard -->
+            <div
+                class="bg-surface-container border border-outline-variant p-4 rounded-sm flex flex-col justify-between">
+                <span class="text-on-surface-variant font-label-caps text-[10px] uppercase tracking-widest">Avg
+                    Jaccard</span>
+                <div class="flex items-end justify-between mt-2">
+                    <span class="text-headline-md font-metric-sm text-primary">0.142</span>
+                    <div class="w-12 h-1 bg-surface-container-highest rounded-full overflow-hidden">
+                        <div class="bg-primary h-full" style="width: 14.2%"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Pairs Checked -->
+            <div
+                class="bg-surface-container border border-outline-variant p-4 rounded-sm flex flex-col justify-between">
+                <span class="text-on-surface-variant font-label-caps text-[10px] uppercase tracking-widest">Pairs
+                    Checked</span>
+                <div class="flex items-end justify-between mt-2">
+                    <span class="text-headline-md font-metric-sm text-on-surface">1.2M</span>
+                    <span class="material-symbols-outlined text-outline-variant" data-icon="hub">hub</span>
+                </div>
+            </div>
+        </div>
+        <!-- Filter Bar -->
+        <div class="flex items-center gap-3 overflow-x-auto pb-2 border-b border-outline-variant">
+            <button
+                class="px-4 py-1.5 bg-primary-container text-white text-label-caps font-label-caps rounded-full text-[11px]">All
+                Pairs</button>
+            <button
+                class="px-4 py-1.5 bg-surface-container-high text-on-surface-variant hover:text-on-surface text-label-caps font-label-caps rounded-full border border-outline-variant text-[11px]">High
+                Risk (12)</button>
+            <button
+                class="px-4 py-1.5 bg-surface-container-high text-on-surface-variant hover:text-on-surface text-label-caps font-label-caps rounded-full border border-outline-variant text-[11px]">Medium
+                (28)</button>
+            <button
+                class="px-4 py-1.5 bg-surface-container-high text-on-surface-variant hover:text-on-surface text-label-caps font-label-caps rounded-full border border-outline-variant text-[11px]">Source
+                Match</button>
+            <button
+                class="px-4 py-1.5 bg-surface-container-high text-on-surface-variant hover:text-on-surface text-label-caps font-label-caps rounded-full border border-outline-variant text-[11px]">Boilerplate
+                Excluded</button>
+            <div class="ml-auto flex items-center bg-surface-container border border-outline-variant rounded px-2 py-1">
+                <span class="material-symbols-outlined text-[18px] text-outline-variant"
+                    data-icon="search">search</span>
+                <input
+                    class="bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-outline-variant w-48"
+                    placeholder="Search filenames..." type="text" />
+            </div>
+        </div>
+        <!-- Workplace -->
+        <div class="grid grid-cols-12 gap-grid-gutter h-[calc(100vh-320px)] min-h-[500px]">
+            <!-- Left Column: Match Feed -->
+            <div class="col-span-12 lg:col-span-4 overflow-y-auto pr-2 space-y-element-gap">
+                <!-- Card 1 -->
+                <div
+                    class="bg-[rgba(37,99,235,0.06)] border-l-4 border-l-[#2563eb] border-y border-r border-outline-variant p-4 space-y-4 hover:bg-[rgba(37,99,235,0.08)] cursor-pointer transition-colors group relative">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <h3 class="font-code-md text-code-md text-on-surface">solution_alice.cpp</h3>
+                            <p class="font-code-md text-code-md text-outline-variant">solution_bob.cpp</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="text-outline-variant hover:text-on-surface transition-colors"
+                                title="Copy Link">
+                                <span class="material-symbols-outlined text-[16px]" data-icon="link">link</span>
+                            </button>
+                            <span
+                                class="bg-[#93000a] text-[#ffdad6] text-[10px] font-bold px-2 py-0.5 rounded tracking-tighter uppercase">High
+                                Risk</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>JACCARD</span>
+                                <span class="text-on-surface">94%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-[#ef4444]" style="width: 94%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>COSINE</span>
+                                <span class="text-on-surface">92%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-[#ef4444]" style="width: 92%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>Containment A</span>
+                                <span class="text-on-surface">98%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-[#ef4444]" style="width: 98%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>Containment B</span>
+                                <span class="text-on-surface">91%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-[#ef4444]" style="width: 91%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="absolute inset-y-0 right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined text-primary"
+                            data-icon="chevron_right">chevron_right</span>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    class="bg-surface-container-lowest border-l-4 border-l-tertiary border-y border-r border-outline-variant p-4 space-y-4 hover:bg-surface-container-high cursor-pointer transition-colors group relative">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <h3 class="font-code-md text-code-md text-on-surface">utils_parser.py</h3>
+                            <p class="font-code-md text-code-md text-outline-variant">parser_v2_legacy.py</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="text-outline-variant hover:text-on-surface transition-colors"
+                                title="Copy Link">
+                                <span class="material-symbols-outlined text-[16px]" data-icon="link">link</span>
+                            </button>
+                            <span
+                                class="bg-tertiary-container text-tertiary-fixed text-[10px] font-bold px-2 py-0.5 rounded tracking-tighter uppercase">Medium</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>JACCARD</span>
+                                <span class="text-on-surface">62%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-tertiary" style="width: 62%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>COSINE</span>
+                                <span class="text-on-surface">71%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-tertiary" style="width: 71%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>Containment A</span>
+                                <span class="text-on-surface">54%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-tertiary" style="width: 54%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>Containment B</span>
+                                <span class="text-on-surface">88%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-tertiary" style="width: 88%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    class="bg-surface-container-lowest border-l-4 border-l-emerald-500 border-y border-r border-outline-variant p-4 space-y-4 hover:bg-surface-container-high cursor-pointer transition-colors group relative">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <h3 class="font-code-md text-code-md text-on-surface">main.js</h3>
+                            <p class="font-code-md text-code-md text-outline-variant">bootstrap.js</p>
+                        </div>
+                        <span
+                            class="bg-emerald-900 text-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded tracking-tighter uppercase">Low
+                            Risk</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>JACCARD</span>
+                                <span class="text-on-surface">12%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-emerald-500" style="width: 12%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>COSINE</span>
+                                <span class="text-on-surface">24%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-emerald-500" style="width: 24%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>Containment A</span>
+                                <span class="text-on-surface">08%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-emerald-500" style="width: 8%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-metric-sm text-outline-variant">
+                                <span>Containment B</span>
+                                <span class="text-on-surface">15%</span>
+                            </div>
+                            <div class="h-1 bg-surface-container-lowest rounded-full">
+                                <div class="h-full bg-emerald-500" style="width: 15%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column: Code Diff Viewer -->
+            <div class="col-span-12 lg:col-span-8 flex flex-col gap-2">
+                <!-- Security Status -->
+                <div class="flex items-center gap-2 text-outline-variant text-[11px] font-metric-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+                    <span>Volatile Purge Active: Code parsed securely in-memory and immediately destroyed
+                        post-scan.</span>
+                </div>
+                <div
+                    class="flex-1 bg-surface-container border border-outline-variant rounded-sm overflow-hidden flex flex-col">
+                    <!-- Diff Header -->
+                    <div
+                        class="bg-[#161B22] border-b border-outline-variant h-12 flex items-center justify-between px-4 shrink-0">
+                        <div class="flex items-center gap-4">
+                            <span class="material-symbols-outlined text-primary text-[20px]"
+                                data-icon="difference">difference</span>
+                            <h2 class="font-headline-sm text-headline-sm">Side-by-Side Comparison</h2>
+                            <div
+                                class="ml-4 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-metric-sm text-[11px] rounded flex items-center gap-1.5 tracking-wide">
+                                <span class="material-symbols-outlined text-[14px]">analytics</span>
+                                AST SIMILARITY: 0.982
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="p-1 text-on-surface-variant hover:text-on-surface transition-colors">
+                                <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                            </button>
+                            <button class="p-1 text-on-surface-variant hover:text-on-surface transition-colors">
+                                <span class="material-symbols-outlined" data-icon="fullscreen">fullscreen</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Split View Content -->
+                    <div class="flex-1 flex divide-x divide-outline-variant overflow-hidden">
+                        <!-- Left Code Window -->
+                        <div class="flex-1 flex flex-col overflow-hidden">
+                            <div
+                                class="bg-surface-container-high px-4 py-2 flex items-center gap-2 border-b border-outline-variant shrink-0">
+                                <span class="material-symbols-outlined text-yellow-500 text-[16px]"
+                                    data-icon="description">description</span>
+                                <span class="font-code-md text-code-md text-on-surface">src/alice/solution.cpp</span>
+                            </div>
+                            <div
+                                class="flex-1 overflow-auto bg-surface-container-lowest py-2 font-code-md text-code-md leading-[1.6] whitespace-pre overflow-x-auto">
+                                <div
+                                    class="flex min-w-max items-center h-6 bg-[rgba(255,255,255,0.01)] border-y border-[rgba(255,255,255,0.03)] text-outline-variant hover:bg-[rgba(255,255,255,0.03)] hover:text-on-surface cursor-pointer mb-2 transition-colors">
+                                    <div
+                                        class="code-line-num text-center flex items-center justify-center border-none mr-0 pr-0 w-[3rem] opacity-50">
+                                        <span class="material-symbols-outlined text-[14px]">unfold_more</span></div>
+                                    <div class="text-[10px] font-metric-sm opacity-60 ml-3">Expand hidden lines</div>
+                                </div>
+                                <div class="flex min-w-max"><span class="code-line-num">1</span><span
+                                        class="text-on-surface">#include &lt;iostream&gt;</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">2</span><span
+                                        class="text-on-surface">#include &lt;vector&gt;</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">3</span><span
+                                        class="text-on-surface"></span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">4</span><span
+                                        class="text-on-surface">int find_median(std::vector&lt;int&gt;&amp; arr)
+                                        {</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">5</span><span
+                                        class="text-on-surface">    std::sort(arr.begin(), arr.end());</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">6</span><span
+                                        class="text-on-surface">    int n = arr.size();</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">7</span><span
+                                        class="text-on-surface">    if (n % 2 == 0)</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">8</span><span
+                                        class="text-on-surface">        return (arr[n/2] + arr[n/2 - 1]) / 2;</span>
+                                </div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">9</span><span
+                                        class="text-on-surface">    else</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">10</span><span
+                                        class="text-on-surface">        return arr[n/2];</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">11</span><span
+                                        class="text-on-surface">}</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">12</span><span
+                                        class="text-on-surface"></span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">13</span><span
+                                        class="text-on-surface">int main() {</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">14</span><span
+                                        class="text-on-surface">    std::vector&lt;int&gt; v = {3, 1, 4, 1, 5,
+                                        9};</span></div>
+                                <div
+                                    class="flex min-w-max items-center h-6 bg-[rgba(255,255,255,0.01)] border-y border-[rgba(255,255,255,0.03)] text-outline-variant hover:bg-[rgba(255,255,255,0.03)] hover:text-on-surface cursor-pointer mt-2 transition-colors">
+                                    <div
+                                        class="code-line-num text-center flex items-center justify-center border-none mr-0 pr-0 w-[3rem] opacity-50">
+                                        <span class="material-symbols-outlined text-[14px]">unfold_more</span></div>
+                                    <div class="text-[10px] font-metric-sm opacity-60 ml-3">Expand remaining code</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Code Window -->
+                        <div class="flex-1 flex flex-col overflow-hidden">
+                            <div
+                                class="bg-surface-container-high px-4 py-2 flex items-center gap-2 border-b border-outline-variant shrink-0">
+                                <span class="material-symbols-outlined text-blue-500 text-[16px]"
+                                    data-icon="description">description</span>
+                                <span class="font-code-md text-code-md text-on-surface">src/bob/solution.cpp</span>
+                            </div>
+                            <div
+                                class="flex-1 overflow-auto bg-surface-container-lowest py-2 font-code-md text-code-md leading-[1.6] whitespace-pre overflow-x-auto">
+                                <div
+                                    class="flex min-w-max items-center h-6 bg-[rgba(255,255,255,0.01)] border-y border-[rgba(255,255,255,0.03)] text-outline-variant hover:bg-[rgba(255,255,255,0.03)] hover:text-on-surface cursor-pointer mb-2 transition-colors">
+                                    <div
+                                        class="code-line-num text-center flex items-center justify-center border-none mr-0 pr-0 w-[3rem] opacity-50">
+                                        <span class="material-symbols-outlined text-[14px]">unfold_more</span></div>
+                                    <div class="text-[10px] font-metric-sm opacity-60 ml-3">Expand hidden lines</div>
+                                </div>
+                                <div class="flex min-w-max"><span class="code-line-num">1</span><span
+                                        class="text-on-surface">#include &lt;bits/stdc++.h&gt;</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">2</span><span
+                                        class="text-on-surface">using namespace std;</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">3</span><span
+                                        class="text-on-surface"></span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">4</span><span
+                                        class="text-on-surface">int getMedian(vector&lt;int&gt;&amp; vec) {</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">5</span><span
+                                        class="text-on-surface">    sort(vec.begin(), vec.end());</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">6</span><span
+                                        class="text-on-surface">    int sz = vec.size();</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">7</span><span
+                                        class="text-on-surface">    if (sz % 2 == 0)</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">8</span><span
+                                        class="text-on-surface">        return (vec[sz/2] + vec[sz/2 - 1]) / 2;</span>
+                                </div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">9</span><span
+                                        class="text-on-surface">    else</span></div>
+                                <div class="flex min-w-max diff-highlight"><span class="code-line-num">10</span><span
+                                        class="text-on-surface">        return vec[sz/2];</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">11</span><span
+                                        class="text-on-surface">}</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">12</span><span
+                                        class="text-on-surface"></span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">13</span><span
+                                        class="text-on-surface">int main() {</span></div>
+                                <div class="flex min-w-max"><span class="code-line-num">14</span><span
+                                        class="text-on-surface">    vector&lt;int&gt; nums = {1, 2, 3, 4, 5};</span>
+                                </div>
+                                <div
+                                    class="flex min-w-max items-center h-6 bg-[rgba(255,255,255,0.01)] border-y border-[rgba(255,255,255,0.03)] text-outline-variant hover:bg-[rgba(255,255,255,0.03)] hover:text-on-surface cursor-pointer mt-2 transition-colors">
+                                    <div
+                                        class="code-line-num text-center flex items-center justify-center border-none mr-0 pr-0 w-[3rem] opacity-50">
+                                        <span class="material-symbols-outlined text-[14px]">unfold_more</span></div>
+                                    <div class="text-[10px] font-metric-sm opacity-60 ml-3">Expand remaining code</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Diff Footer / Stats -->
+                    <div
+                        class="bg-surface-container-high border-t border-outline-variant h-8 flex items-center px-4 gap-6 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-[#ef4444]"></span>
+                            <span class="text-[10px] font-metric-sm text-outline-variant">7 BLOCKS MATCHED</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-primary"></span>
+                            <span class="text-[10px] font-metric-sm text-outline-variant">TOKEN RENAMING DETECTED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="full-width bottom-0 border-t border-outline-variant bg-surface-container-lowest grid grid-cols-2 md:grid-cols-4 gap-grid-gutter px-container-padding py-12 w-full">
+        <div class="col-span-2 md:col-span-1 space-y-4">
+            <span class="font-headline-sm text-headline-sm font-bold text-on-surface">VeriScan Pro</span>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-xs">VeriScan Pro utilizes structural
+                Abstract Syntax Tree analysis to detect deep logic similarity and plagiarism in technical codebases.</p>
+        </div>
+        <div class="space-y-4">
+            <h4 class="font-label-caps text-label-caps text-primary">Product</h4>
+            <ul class="space-y-2">
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Features</a></li>
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Pricing</a></li>
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Documentation</a></li>
+            </ul>
+        </div>
+        <div class="space-y-4">
+            <h4 class="font-label-caps text-label-caps text-primary">Legal</h4>
+            <ul class="space-y-2">
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Terms of Service</a></li>
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div class="col-span-2 md:col-span-1 flex flex-col justify-end">
+            <p class="font-body-md text-body-md text-on-surface-variant text-right">© 2024 VeriScan Pro. Structural AST
+                Analysis.</p>
+        </div>
+    </footer>
+    <script>
+        // Micro-interaction for code diff scrolling (sync scrolls)
+        const codeWindows = document.querySelectorAll('.overflow-auto');
+        let isSyncing = false;
+
+        codeWindows.forEach(win => {
+            win.addEventListener('scroll', (e) => {
+                if (!isSyncing) {
+                    isSyncing = true;
+                    codeWindows.forEach(otherWin => {
+                        if (otherWin !== win) {
+                            otherWin.scrollTop = win.scrollTop;
+                            otherWin.scrollLeft = win.scrollLeft;
+                        }
+                    });
+                    isSyncing = false;
+                }
+            });
+        });
+
+        // Hover effect for match cards
+        const matchCards = document.querySelectorAll('.cursor-pointer');
+        matchCards.forEach(card => {
+            card.addEventListener('click', () => {
+                matchCards.forEach(c => c.classList.remove('bg-surface-container-high', 'border-primary'));
+                card.classList.add('bg-surface-container-high');
+            });
+        });
+    </script>
+</body>
+
+</html>

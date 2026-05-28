@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VeriScan Pro | Advanced AST Plagiarism Analysis</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#32343d",
+                        "primary": "#b4c5ff",
+                        "on-tertiary-fixed": "#360f00",
+                        "inverse-primary": "#0053db",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "surface-variant": "#32343d",
+                        "surface": "#11131b",
+                        "inverse-on-surface": "#2e3039",
+                        "background": "#11131b",
+                        "secondary-fixed": "#e2e1eb",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary": "#ffb596",
+                        "secondary": "#c6c6cf",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#b4b4bd",
+                        "on-secondary": "#2f3037",
+                        "secondary-container": "#45464e",
+                        "on-tertiary": "#581e00",
+                        "surface-dim": "#11131b",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "outline": "#8d90a0",
+                        "on-primary-container": "#eeefff",
+                        "surface-container-low": "#191b23",
+                        "surface-container-lowest": "#0c0e16",
+                        "surface-tint": "#b4c5ff",
+                        "surface-container": "#1d1f27",
+                        "surface-bright": "#373942",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-container-high": "#282a32",
+                        "on-secondary-fixed-variant": "#45464e",
+                        "outline-variant": "#434655",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-surface": "#e1e2ed",
+                        "on-tertiary-container": "#ffede6",
+                        "secondary-fixed-dim": "#c6c6cf",
+                        "on-background": "#e1e2ed",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "primary-container": "#2563eb",
+                        "on-surface-variant": "#c3c6d7",
+                        "inverse-surface": "#e1e2ed",
+                        "tertiary-container": "#bc4800",
+                        "on-primary": "#002a78",
+                        "on-secondary-fixed": "#1a1b22"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "sidebar-width": "240px",
+                        "container-padding": "24px",
+                        "grid-gutter": "16px",
+                        "element-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Geist"],
+                        "body-md": ["Geist"],
+                        "metric-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "headline-sm": ["Geist"],
+                        "code-md": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "metric-sm": ["12px", { "lineHeight": "1", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "code-md": ["13px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #09090B;
+            color: #FAFAFA;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .code-glow {
+            text-shadow: 0 0 20px rgba(180, 197, 255, 0.3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #b4c5ff 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dropzone-active {
+            border-color: #b4c5ff;
+            background-color: rgba(180, 197, 255, 0.05);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body
+    class="font-body-md text-body-md overflow-x-hidden selection:bg-primary-container selection:text-white bg-[#09090B]">
+    <!-- TopNavBar -->
+    <header
+        class="docked full-width top-0 sticky z-50 border-b border-[#27272A] bg-[#09090B] flex justify-between items-center w-full px-container-padding h-16">
+        <div class="flex items-center gap-8">
+            <span class="font-headline-md text-headline-md font-bold text-on-surface">VeriScan Pro</span>
+            <nav class="hidden md:flex items-center gap-6">
+                <a class="font-label-caps text-label-caps text-primary font-bold border-b-2 border-primary pb-1"
+                    href="#">Upload</a>
+                <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors"
+                    href="#">Results</a>
+                <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors"
+                    href="#">Compare</a>
+                <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors"
+                    href="#">Docs</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <button
+                class="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-highest transition-all duration-200"
+                data-icon="dark_mode">dark_mode</button>
+            <button
+                class="px-4 py-2 border border-[#27272A] text-on-surface font-label-caps text-label-caps hover:bg-surface-container-highest transition-all duration-200">Log
+                In</button>
+            <button
+                class="px-4 py-2 bg-primary-container text-white font-label-caps text-label-caps active:scale-95 transition-transform">Get
+                Started</button>
+        </div>
+    </header>
+    <main>
+        <!-- Hero Section -->
+        <section
+            class="relative pt-24 pb-16 px-container-padding flex flex-col items-center text-center max-w-6xl mx-auto">
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full border border-[#27272A] mb-8">
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <span
+                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Enterprise
+                    AST Analysis v4.2</span>
+            </div>
+            <h1 class="font-headline-lg text-headline-lg md:text-6xl md:leading-tight mb-6 max-w-4xl">
+                Detect Code <span class="gradient-text">Plagiarism</span> in Seconds
+            </h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-12">
+                High-performance C++ engine leveraging <span class="text-primary font-mono">Jaccard similarity</span>
+                and <span class="text-primary font-mono">Cosine metrics</span>. VeriScan Pro maps Abstract Syntax Trees
+                to expose deep-logic duplication that basic text matchers miss.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <div class="flex items-center gap-2 px-4 py-2 bg-[#121214] border border-[#27272A] rounded">
+                    <span class="material-symbols-outlined text-primary text-sm" data-icon="speed">speed</span>
+                    <span class="font-metric-sm text-metric-sm">2.4M LOC/sec</span>
+                </div>
+                <div class="flex items-center gap-2 px-4 py-2 bg-[#121214] border border-[#27272A] rounded">
+                    <span class="material-symbols-outlined text-primary text-sm" data-icon="security">security</span>
+                    <span class="font-metric-sm text-metric-sm">SOC2 Type II</span>
+                </div>
+                <div class="flex items-center gap-2 px-4 py-2 bg-[#121214] border border-[#27272A] rounded">
+                    <span class="material-symbols-outlined text-primary text-sm" data-icon="memory">memory</span>
+                    <span class="font-metric-sm text-metric-sm">Multithreaded AST</span>
+                </div>
+            </div>
+        </section>
+        <!-- Dropzone Section -->
+        <section class="px-container-padding py-12 max-w-5xl mx-auto flex flex-col items-center">
+            <div class="w-full relative group border-2 border-dashed border-[#27272A] bg-[#121214] rounded-xl p-12 flex flex-col items-center justify-center transition-all cursor-pointer hover:border-primary"
+                id="dropzone">
+                <div
+                    class="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
+                    <span class="material-symbols-outlined text-primary text-4xl"
+                        data-icon="cloud_upload">cloud_upload</span>
+                </div>
+                <h3 class="font-headline-sm text-headline-sm mb-2">Drag &amp; drop files or folders</h3>
+                <button
+                    class="mb-4 text-primary text-sm font-medium hover:underline flex items-center gap-1 transition-colors">
+                    💡 Quick Demo: Click to inject an example plagiarized AST pair
+                </button>
+                <p class="text-on-surface-variant mb-8">Securely upload source code for immediate cross-repository
+                    analysis</p>
+                <div class="flex flex-wrap justify-center gap-2 mb-10">
+                    <span
+                        class="px-3 py-1 bg-surface-container text-on-surface-variant border border-[#27272A] rounded font-metric-sm text-metric-sm">.cpp</span>
+                    <span
+                        class="px-3 py-1 bg-surface-container text-on-surface-variant border border-[#27272A] rounded font-metric-sm text-metric-sm">.c</span>
+                    <span
+                        class="px-3 py-1 bg-surface-container text-on-surface-variant border border-[#27272A] rounded font-metric-sm text-metric-sm">.h</span>
+                    <span
+                        class="px-3 py-1 bg-surface-container text-on-surface-variant border border-[#27272A] rounded font-metric-sm text-metric-sm">.py</span>
+                    <span
+                        class="px-3 py-1 bg-surface-container text-on-surface-variant border border-[#27272A] rounded font-metric-sm text-metric-sm">.java</span>
+                </div>
+                <div
+                    class="bg-error-container/20 border border-error/30 text-[#ffb4ab] px-4 py-3 rounded-md mb-8 flex items-center gap-3 w-full max-w-lg">
+                    <span class="material-symbols-outlined text-error" data-icon="error">error</span>
+                    <span class="text-sm">File rejected: AST normalisation supports .cpp, .c, .h, .py, .java, and .js
+                        extensions only.</span>
+                </div>
+                <div class="flex gap-4 w-full max-w-sm">
+                    <button
+                        class="flex-1 px-6 py-3 border border-[#27272A] rounded font-label-caps text-label-caps hover:bg-surface-container-highest transition-colors">Clear</button>
+                    <button
+                        class="flex-[2] px-6 py-3 bg-primary-container text-on-primary-container rounded font-label-caps text-label-caps hover:brightness-110 shadow-lg shadow-primary-container/20 transition-all flex items-center justify-center gap-2">
+                        Upload &amp; Analyze
+                        <span class="material-symbols-outlined text-sm" data-icon="rocket_launch">rocket_launch</span>
+                    </button>
+                </div>
+            </div>
+            <div
+                class="mt-6 font-code-md text-code-md text-on-surface-variant text-center opacity-80 flex items-center gap-2">
+                <span>⚡ Engine Core Telemetry: Processing ~124,000 tokens/sec across live sandboxed instances.</span>
+            </div>
+        </section>
+        <!-- Bento Grid Features -->
+        <section class="px-container-padding py-24 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-grid-gutter auto-rows-[240px]">
+                <!-- Card 1: Winnowing -->
+                <div
+                    class="md:col-span-8 bg-[#121214] border border-[#27272A] rounded-xl p-8 relative overflow-hidden group">
+                    <div class="relative z-10 h-full flex flex-col">
+                        <span class="material-symbols-outlined text-primary mb-4"
+                            data-icon="fingerprint">fingerprint</span>
+                        <h4 class="font-headline-md text-headline-md mb-2">Winnowing k-gram Algorithm</h4>
+                        <p class="text-on-surface-variant max-w-md">Robust fingerprinting that remains resilient to
+                            variable renaming, whitespace changes, and structural refactoring.</p>
+                        <div class="mt-auto pt-4 flex gap-2">
+                            <div class="h-1 bg-primary/20 flex-1 rounded-full overflow-hidden">
+                                <div class="h-full bg-primary w-2/3"></div>
+                            </div>
+                            <div class="h-1 bg-primary/20 flex-1 rounded-full overflow-hidden">
+                                <div class="h-full bg-primary w-1/2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <span class="material-symbols-outlined text-[200px]" data-icon="grid_view">grid_view</span>
+                    </div>
+                </div>
+                <!-- Card 2: Private Security -->
+                <div
+                    class="md:col-span-4 bg-[#121214] border border-[#27272A] rounded-xl p-8 flex flex-col justify-center text-center group">
+                    <div
+                        class="w-16 h-16 bg-error-container/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="material-symbols-outlined text-error" data-icon="shield_lock"
+                            style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+                    </div>
+                    <h4 class="font-headline-sm text-headline-sm mb-2">Private Security Layer</h4>
+                    <p class="text-on-surface-variant text-sm">Your code never touches our training sets. SOC2 compliant
+                        hashing ensures IP protection.</p>
+                </div>
+                <!-- Card 3: C++ Engine -->
+                <div class="md:col-span-4 bg-[#121214] border border-[#27272A] rounded-xl p-8 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent"></div>
+                    <h4 class="font-headline-sm text-headline-sm mb-2">C++ Native Engine</h4>
+                    <p class="text-on-surface-variant text-sm mb-6">Built in low-level C++ for extreme concurrency.
+                        Analyze 10,000+ files in seconds.</p>
+                    <div class="space-y-2">
+                        <div class="flex justify-between font-metric-sm text-metric-sm text-on-surface-variant">
+                            <span>Memory usage</span>
+                            <span>1.2 GB</span>
+                        </div>
+                        <div class="flex justify-between font-metric-sm text-metric-sm text-on-surface-variant">
+                            <span>CPU utilization</span>
+                            <span>98%</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 4: Metrics -->
+                <div
+                    class="md:col-span-8 bg-[#121214] border border-[#27272A] rounded-xl p-8 flex flex-col md:flex-row gap-8 items-center">
+                    <div class="flex-1">
+                        <h4 class="font-headline-md text-headline-md mb-2">Multidimensional Metrics</h4>
+                        <p class="text-on-surface-variant">We don't just find copies. We analyze logic flow, control
+                            paths, and constant usage patterns.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 w-full md:w-auto">
+                        <div class="p-4 bg-[#09090B] rounded border border-[#27272A] text-center">
+                            <div class="text-primary font-metric-sm text-xl mb-1">0.98</div>
+                            <div class="text-[10px] uppercase text-on-surface-variant font-bold tracking-tighter">Cosine
+                            </div>
+                        </div>
+                        <div class="p-4 bg-[#09090B] rounded border border-[#27272A] text-center">
+                            <div class="text-primary font-metric-sm text-xl mb-1">94%</div>
+                            <div class="text-[10px] uppercase text-on-surface-variant font-bold tracking-tighter">
+                                Jaccard</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="full-width bottom-0 border-t border-[#27272A] bg-[#09090B] grid grid-cols-2 md:grid-cols-4 gap-grid-gutter px-container-padding py-12 w-full">
+        <div class="col-span-2 md:col-span-1 space-y-4">
+            <span class="font-headline-sm text-headline-sm font-bold text-on-surface">VeriScan Pro</span>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-xs">VeriScan Pro utilizes structural
+                Abstract Syntax Tree analysis to detect deep logic similarity and plagiarism in technical codebases.</p>
+        </div>
+        <div class="space-y-4">
+            <h4 class="font-label-caps text-label-caps text-primary">Product</h4>
+            <ul class="space-y-2">
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Features</a></li>
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Pricing</a></li>
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Documentation</a></li>
+            </ul>
+        </div>
+        <div class="space-y-4">
+            <h4 class="font-label-caps text-label-caps text-primary">Legal</h4>
+            <ul class="space-y-2">
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Terms of Service</a></li>
+                <li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors"
+                        href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div class="col-span-2 md:col-span-1 flex flex-col justify-end">
+            <p class="font-body-md text-body-md text-on-surface-variant text-right">© 2024 VeriScan Pro. Structural AST
+                Analysis.</p>
+        </div>
+    </footer>
+    <script>
+        // Simple micro-interaction for dropzone
+        const dropzone = document.getElementById('dropzone');
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dropzone-active');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dropzone-active');
+            });
+        });
+
+        dropzone.addEventListener('drop', () => {
+            alert('File analysis initiated. Initializing AST mapping engine...');
+        });
+
+        // Atmosphere Effect: Subtle cursor shadow
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.body.style.background = `radial-gradient(circle at ${x}% ${y}%, #11131b 0%, #09090B 100%)`;
+        });
+    </script>
+</body>
+
+</html>
